@@ -1,0 +1,89 @@
+{% extends 'base/layout.html' %}
+
+{% block title %}
+    IA - Detección
+{% endblock %}
+
+{% block content %}
+<section class="medilife-contact-area section-padding-100">
+    <div class="container">
+            
+        <div class="row">
+            <!-- Contact Form Area -->
+            <div class="col-12 col-lg-8">
+                <div class="contact-form">
+                    <br><br>
+                    <h5 class="mb-50">Subir foto</h5>
+
+                    <form method="POST" enctype="multipart/form-data" id="formImagen">
+                        {% csrf_token %}
+                        <div class="form-group">                                
+                            <input type="file" name="imgBackend" accept="image/png, image/jpeg">
+                        </div>                       
+
+                        <button type="submit" class="btn medilife-btn btn-file" id="">Post Ajax</button>                        
+                    </form>                                                          
+                    <div class="progress">
+                        <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <br><br>  
+                    <img id="my_image">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    
+{% endblock %}
+
+{% block javascript %}
+<script>    
+    $("#formImagen").submit(function(e){    
+        var porcentaje = 0;
+        $('#progressBar').attr('aria-valuenow', porcentaje).css('width', porcentaje + '%').text(porcentaje + '%');
+
+        e.preventDefault();
+        $form = $(this);
+        var formData = new FormData(this);        
+
+        $.ajax({
+            xhr: function(){
+                var xhr = new window.XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', function(e){
+                    if(e.lengthComputable)
+                    {
+                        console.log('Bytes cargados:' + e.loaded);
+                        console.log('Total size: ' + e.total);
+                        console.log('Porcentaje Cargado: ' + (e.loaded / e.total));
+
+                        porcentaje = Math.round((e.loaded / e.total) * 100);
+                        $('#progressBar').attr('aria-valuenow', porcentaje).css('width', porcentaje + '%').text(porcentaje + '%');
+                    }                    
+                });
+                return xhr;
+            },
+            type: 'POST',
+            url: '/testAjax/',
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                //alert(response.rutaImg)                
+                $("#my_image").attr("src",''+response.rutaImg+'');
+            }
+        });         
+    });
+
+    function loader()
+    {
+        var valor = 0;
+        var interval = setInterval(function(){
+            valor++;
+            $
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %} Document {% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/bootstrap.min.css' %}">   
+</head>
+<body>
+    <div class="container">
+        {% block header %}
+        <h1>Bloque del header base</h1>
+        {% endblock %}
+
+        {% block content %}
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni ex laborum ab molestias alias atque in obcaecati quos maxime? Excepturi quasi error, sed voluptatibus cumque incidunt exercitationem consequatur modi ab.</p>
+        {% endblock %}
+
+        {% block footer %}
+        <footer>Pie de página del template base</footer>
+    {% endblock %}
+    </div>
+</body>
+</html>

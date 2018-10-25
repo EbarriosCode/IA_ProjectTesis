@@ -1,0 +1,123 @@
+{% extends 'base/layout.html' %}
+
+{% block title %}
+    IA - Detección
+{% endblock %}
+
+{% block content %}
+{% load static %}
+<section class="breadcumb-area bg-img gradient-background-overlay" style="background-image: url({% static 'assets/img/bg-img/neurona.jpg' %});">
+    <div class="container h-50">
+        <div class="row h-50 align-items-center">
+            <div class="col-12">
+                <div class="breadcumb-content">
+                    <h3 class="breadcumb-title">Detección por medio de imágenes</h3>                                       
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="medilife-contact-area section-padding-100">
+    <div class="container">
+        <div class="row">
+            <!-- Contact Form Area -->
+            <div class="col-12 col-lg-8">
+                <div class="contact-form">
+                    <h5 class="mb-50">Subir foto</h5>
+
+                    <form method="POST" enctype="multipart/form-data" id="formDeteccion">
+                        {% csrf_token %}
+                        <div class="form-group">                                
+                            <input type="file" name="imgBackend" accept="image/png, image/jpeg" id="imgBackend">
+                        </div>                                                                                             
+
+                        <button type="submit" class="btn medilife-btn btn-file">Procesar</button>
+                    </form>                    
+                </div>
+                <!--Imagen subida resultado-->
+                <br><br>              
+                <p>Progreso de Carga y Análisis</p>  
+                <div class="progress">                    
+                    <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                <br>
+                <div class="form-group" id="divResultado" style="display: none;">
+                    <img id='img-upload' style="width: 400px; height: 400px;" />
+                    <p id="pResultado"></p>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <div class="content-sidebar">
+
+                    <!-- medilife Emergency Card -->
+                    <div class="medilife-emergency-card bg-img bg-overlay">
+                        <i class="icon-smartphone"></i>
+                        <h3>Redes Neuronales Artificiales</h2>
+                        <h4>El procesamiento de imágenes por medio de IA te permitirá saber el tipo de enfermedad en la piel encontrada.</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block javascript %}
+<script> 
+    $(function(){
+        /* Limpiar los divs de respuest 
+        $("#divResultado").hide();
+        $("#img-upload").attr("src", '');*/
+        
+
+        var porcentaje = 0;
+        $('#progressBar').attr('aria-valuenow', porcentaje).css('width', porcentaje + '%').text(porcentaje + '%');
+
+        $("#imgBackend").click(function(){
+            porcentaje = 0;
+            $('#progressBar').attr('aria-valuenow', porcentaje).css('width', porcentaje + '%').text(porcentaje + '%');
+            $('#divResultado').hide();
+        });
+
+        $("#formDeteccion").submit(function (e) {            
+            e.preventDefault();
+            $form = $(this);
+            var formData = new FormData(this);
+
+            $.ajax({
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+
+                    xhr.upload.addEventListener('progress', function (e) {
+                        if (e.lengthComputable) {
+                            /*console.log('Bytes cargados:' + e.loaded);
+                            console.log('Total size: ' + e.total);
+                            console.log('Porcentaje Cargado: ' + (e.loaded / e.total));*/
+
+                            porcentaje = Math.round((e.loaded / e.total) * 100);
+                            $('#progressBar').attr('aria-valuenow', porcentaje).css('width', porcentaje + '%').text(porcentaje + '%');
+                        }
+                    });
+                    return xhr;
+                },
+                type: 'POST',
+                url: '/Deteccion/',
+                data: formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#pResultado").empty();
+
+                    $("#divResultado").show();
+                    $("#img-upload").attr("src", '' + response.rutaImg + '');
+                    $("#pResultado").append("Resultado: <strong>" + response.resultado + "</strong>");
+                }
+            });
+        });    
+    });
+</script>
+{% endblock %}

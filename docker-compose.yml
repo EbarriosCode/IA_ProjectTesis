@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  ia_tesis:
+    image: ebarrioscode/ia_tesis
+    container_name: ia_project
+    build: .
+    #command: python notebooks/manage.py runserver 0.0.0.0:8081    
+    volumes:
+      - ./tesis:/notebooks
+    ports:
+      - "8081:8081"
+      - "8888:8888"
+      - "6006:6006"
+      - "8886:8886"    
